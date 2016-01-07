@@ -5,7 +5,9 @@
 #
 
 # Adjust the following env vars if needed.
-FUSE_ARTIFACT_ID=jboss-fuse-karaf-full
+# KunalL - using the full version as we want to try fabric
+# FUSE_ARTIFACT_ID=jboss-fuse-karaf-full
+FUSE_ARTIFACT_ID=jboss-fuse-full
 FUSE_DISTRO_URL=http://origin-repository.jboss.org/nexus/content/groups/ea/org/jboss/fuse/${FUSE_ARTIFACT_ID}/${FUSE_VERSION}/${FUSE_ARTIFACT_ID}-${FUSE_VERSION}.zip
 
 # Lets fail fast if any command in this script does succeed.
@@ -35,10 +37,10 @@ sed -i -e 's/environment.prefix=FABRIC8_/environment.prefix=FUSE_/' jboss-fuse/e
 sed -i -e '/karaf.name = root/d' jboss-fuse/etc/system.properties
 sed -i -e '/runtime.id=/d' jboss-fuse/etc/system.properties
 echo '
-if [ -z "$FUSE_KARAF_NAME" ]; then 
+if [ -z "$FUSE_KARAF_NAME" ]; then
   export FUSE_KARAF_NAME="$HOSTNAME"
 fi
-if [ -z "$FUSE_RUNTIME_ID" ]; then 
+if [ -z "$FUSE_RUNTIME_ID" ]; then
   export FUSE_RUNTIME_ID="$FUSE_KARAF_NAME"
 fi
 
@@ -59,7 +61,7 @@ sed -i -e 's/-Djava.io.tmpdir="$KARAF_DATA\/tmp"/-Djava.io.tmpdir="$KARAF_BASE\/
 sed -i -e 's/${karaf.data}\/generated-bundles/${karaf.base}\/tmp\/generated-bundles/' jboss-fuse/etc/org.apache.felix.fileinstall-deploy.cfg
 
 # lets remove the karaf.delay.console=true to disable the progress bar
-sed -i -e 's/karaf.delay.console=true/karaf.delay.console=false/' jboss-fuse/etc/config.properties 
+sed -i -e 's/karaf.delay.console=true/karaf.delay.console=false/' jboss-fuse/etc/config.properties
 echo '
 # Root logger
 log4j.rootLogger=INFO, stdout, osgi:*VmLogAppender
@@ -74,6 +76,8 @@ log4j.appender.stdout.layout.ConversionPattern=%d{ABSOLUTE} | %-5.5p | %-16.16t 
 echo '
 bind.address=0.0.0.0
 '>> jboss-fuse/etc/system.properties
-echo '' >> jboss-fuse/etc/users.properties
+echo '
+admin=password,Operator, Maintainer, Deployer, Auditor, Administrator, SuperUser
+' >> jboss-fuse/etc/users.properties
 
 rm /opt/jboss/install.sh
